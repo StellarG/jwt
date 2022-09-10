@@ -1,0 +1,9 @@
+{
+    "script": "bin/www",
+    "watch": true,
+    "ignore_watch": ["assets","logs"],
+    "watch_options": {
+        "followSymlinks": false
+    },
+    "name": "jwt"
+}
