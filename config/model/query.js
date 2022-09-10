@@ -7,15 +7,18 @@ query.getAllAccount = () => {
 
 query.createAccount = (payload) => {
     let data = {
-        nama : payload['nama'],
+        name : payload['name'],
         amount : payload['amount']
     }
+
+    console.log('data query',data);
     
     let sql = `insert into test.account(name, amount) 
-               values (${data['nama']}, ${data['amount']})`
+               values ('${data['name']}', ${data['amount']})`
     
     return sql
 }
+
 
 
 module.exports = query
