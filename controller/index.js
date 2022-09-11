@@ -1,7 +1,6 @@
-const account = require('./jwt/account')
+const account = require('./jwt/account');
 const controller = {}
 
-controller['jwt'] = account
-
+controller.jwt = account
 
 module.exports = controller
