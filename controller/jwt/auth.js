@@ -31,9 +31,10 @@ controller.login = async (req, res) => {
             }
 
             let token = await jwt.generate(data)
-            // console.log('token',token['message']);
 
-            if(token){res.status(200).json({
+            if(token){
+                await model.user.update({last_login : Date.now()},{where :{username : username}})
+                res.status(200).json({
                 message : "Login Sukses",
                 token : token
             })}
