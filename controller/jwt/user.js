@@ -4,33 +4,48 @@ const db = require('../../config/database/db')
 const controller = {}
 const query = require('../../config/model/query')
 const enc = require('../../config/security/encrypt')
+const helper = require('../../middlewares/response')
+const regExp = require('../../middlewares/regExp')
 
 controller.postUser = async (req, res) => {
     try {
-        let hashPass = await enc.hashPassword(req.body.password)
         let data = {
             username : req.body.username,
-            password : hashPass,
+            password : req.body.password,
             last_login : Date.now(),
-            role_id : 2
+            role_id : 2,
+            email : req.body.email
         }
 
-        let isExist = await model.user.findOne({
-            where : {
-                [Op.and] : [
-                    {username : data['username']},
-                    {isdeleted : false}
-                ]
-            }
-        })
-    
-        if(isExist){
-            res.status(400).json('username sudah ada')
-        }else{
-            let create = await model.user.create(data)
+        if(data['username'] == "" || data['password'] == "" || data['email'] == ""){res.status(400).json(helper.emptyMessage("Field tidak boleh kosong!"))}
+        else if(!regExp.username(data['username'])){res.status(400).json(helper.emptyMessage("Penulisan Username Salah"))}
+        else if(!regExp.email(data['email'])){res.status(400).json(helper.emptyMessage("Penulisan email Salah"))}
+        else if(data['password'].length < 8){res.status(400).json(helper.emptyMessage("password harus lebih dari 8 huruf"))}
+        else{
+            let isExist = await model.user.findOne({
+                where : {
+                    [Op.and] : [
+                        {username : data['username']},
+                        {isdeleted : false}
+                    ],
+                    [Op.and] : [
+                        {email : data['email']},
+                        {isdeleted : false}
+                    ]
+                }
+            })
 
-            if(create){res.status(201).json("data berhasil dibuat")}
-            else{res.status(400).json('gagal buat data')}
+        
+            if(isExist){
+                res.status(400).json(helper.NotFound('Username atau email telah digunakan'))
+            }else{
+
+                data['password'] = await enc.hashPassword(req.body.password)
+                let create = await model.user.create(data)
+    
+                if(create){res.status(201).json(helper.successMessage(create))}
+                else{res.status(400).json(helper.errorMessage('Registrasi gagal'))}
+            }
         }
 
     } catch (error) {
@@ -40,30 +55,43 @@ controller.postUser = async (req, res) => {
 
 controller.postAdmin = async (req, res) => {
     try {
-        let hashPass = await enc.hashPassword(req.body.password)
         let data = {
             username : req.body.username,
-            password : hashPass,
+            password : req.body.password,
             last_login : Date.now(),
-            role_id : 1
+            role_id : 2,
+            email : req.body.email
         }
 
-        let isExist = await model.user.findOne({
-            where : {
-                [Op.and] : [
-                    {username : data['username']},
-                    {isdeleted : false}
-                ]
-            }
-        })
-    
-        if(isExist){
-            res.status(400).json('username sudah ada')
-        }else{
-            let create = await model.user.create(data)
+        if(data['username'] == "" || data['password'] == "" || data['email'] == ""){res.status(400).json(helper.emptyMessage("Field tidak boleh kosong!"))}
+        else if(!regExp.username(data['username'])){res.status(400).json(helper.emptyMessage("Penulisan Username Salah"))}
+        else if(!regExp.email(data['email'])){res.status(400).json(helper.emptyMessage("Penulisan email Salah"))}
+        else if(data['password'].length < 8){res.status(400).json(helper.emptyMessage("password harus lebih dari 8 huruf"))}
+        else{
+            let isExist = await model.user.findOne({
+                where : {
+                    [Op.and] : [
+                        {username : data['username']},
+                        {isdeleted : false}
+                    ],
+                    [Op.and] : [
+                        {email : data['email']},
+                        {isdeleted : false}
+                    ]
+                }
+            })
 
-            if(create){res.status(201).json("data berhasil dibuat")}
-            else{res.status(400).json('gagal buat data')}
+        
+            if(isExist){
+                res.status(400).json(helper.NotFound('Username atau email telah digunakan'))
+            }else{
+
+                data['password'] = await enc.hashPassword(req.body.password)
+                let create = await model.user.create(data)
+    
+                if(create){res.status(201).json(helper.successMessage(create))}
+                else{res.status(400).json(helper.errorMessage('Registrasi gagal'))}
+            }
         }
 
     } catch (error) {

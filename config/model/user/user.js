@@ -14,7 +14,9 @@ model.user = db.define('user',{
     create_date : Sequelize.DATE,
     last_login : Sequelize.DATE,
     isdeleted : Sequelize.BOOLEAN,
-    role_id : Sequelize.INTEGER
+    role_id : Sequelize.INTEGER,
+    isverified : Sequelize.BOOLEAN,
+    email : Sequelize.STRING
 },
 {
     schema : 'test',
