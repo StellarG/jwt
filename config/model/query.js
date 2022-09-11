@@ -20,5 +20,4 @@ query.createAccount = (payload) => {
 }
 
 
-
 module.exports = query
