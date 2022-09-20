@@ -17,5 +17,6 @@ router.put('/user/delete/:id',auth(1),controller.user.softDelete)
 router.delete('/user/hardDelete',auth(1),controller.user.delete)
 
 router.post('/login',controller.auth.login)
+router.post('/verifOTP',controller.auth.verifyOtp)
 
 module.exports = router

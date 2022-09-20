@@ -6,6 +6,8 @@ const query = require('../../config/model/query')
 const enc = require('../../config/security/encrypt')
 const helper = require('../../middlewares/response')
 const regExp = require('../../middlewares/regExp')
+const mailer = require('../../middlewares/nodeMailer')
+const otp = require('../../middlewares/otpGenerator');
 
 controller.postUser = async (req, res) => {
     try {
@@ -34,7 +36,6 @@ controller.postUser = async (req, res) => {
                     ]
                 }
             })
-
         
             if(isExist){
                 res.status(400).json(helper.NotFound('Username atau email telah digunakan'))
@@ -42,9 +43,46 @@ controller.postUser = async (req, res) => {
 
                 data['password'] = await enc.hashPassword(req.body.password)
                 let create = await model.user.create(data)
-    
-                if(create){res.status(201).json(helper.successMessage(create))}
-                else{res.status(400).json(helper.errorMessage('Registrasi gagal'))}
+                const generateOtp = await otp.generateOtp()
+                const hashedOtp = await enc.hashOtp(generateOtp)
+                console.log('masuk sebelum create otp',{
+                    generateOtp: generateOtp,
+                    hashedOtp : hashedOtp
+                });
+                if(create){
+                    console.log('masuk create');
+                    let newOtp = await model.otp.create({
+                        username : data['username'],
+                        otp : hashedOtp,
+                        create_dt : Date.now(),
+                        expired_dt : Date.now() + 3600000,
+                    })
+                    if(newOtp){console.log('create Otp berhasil')}
+                    else{console.log('create otp gagal');}
+
+                    let sendEmail = await mailer.sendEmail(data['email'],generateOtp)
+                    if(sendEmail){
+                        res.status(200).json({
+                            code : "01",
+                            status : "PENDING",
+                            message : "Verfication OTP email Sent",
+                            data : {
+                                username : data['username'],
+                                email : data['email']
+                            }
+                        })
+                    }else{
+                        res.status(400).json({
+                            code : "02",
+                            status : false,
+                            message : "Failed to Send Email"
+                        })
+                    }
+                }else{
+                    res.status(400).json(helper.errorMessage('Registrasi Gagal'))
+                }
+                // if(create){res.status(201).json(helper.successMessage(create))}
+                // else{res.status(400).json(helper.errorMessage('Registrasi gagal'))}
             }
         }
 
@@ -81,7 +119,6 @@ controller.postAdmin = async (req, res) => {
                 }
             })
 
-        
             if(isExist){
                 res.status(400).json(helper.NotFound('Username atau email telah digunakan'))
             }else{
@@ -110,6 +147,7 @@ controller.softDelete = async (req, res) => {
                 user_id : id
             }
         })
+
         if(isExist){
             if(isExist['isdeleted'] == false){
                 let data = {
@@ -147,6 +185,10 @@ controller.delete = async (req, res) => {
     } catch (error) {
         res.status(400).json(error['message'])
     }
+}
+
+controller.sendVerifOtp = async (req, res)=>{
+    
 }
 
 

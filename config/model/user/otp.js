@@ -3,7 +3,13 @@ const db = require('../../database/db')
 const model = {}
 
 model.otp = db.define('otp',{
-    user_id : Sequelize.INTEGER,
+    id : {
+        type : Sequelize.INTEGER,
+        primaryKey : true,
+        autoIncrement : true,
+        allowNull : false
+    },
+    username : Sequelize.STRING,
     otp : Sequelize.STRING,
     create_dt : Sequelize.DATE,
     expired_dt : Sequelize.DATE
