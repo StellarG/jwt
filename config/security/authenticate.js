@@ -9,7 +9,6 @@ function authenticates (roles) {
     
         jwt.verify(token, process.env.JWT_KEYS, (err, user) =>{
             if(err){return res.status(403).json(err['message'])}
-            console.log('user',user);
             if(user.roles === roles){next()}
             else{res.status(403).json('access denied')}
         })
