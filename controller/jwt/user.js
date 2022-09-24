@@ -97,7 +97,7 @@ controller.postAdmin = async (req, res) => {
             username : req.body.username,
             password : req.body.password,
             last_login : Date.now(),
-            role_id : 2,
+            role_id : 1,
             email : req.body.email
         }
 
