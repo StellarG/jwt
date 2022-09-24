@@ -16,7 +16,7 @@ enc.hashOtp = async (otp) =>{
     try {
         const salt = await bcrypt.genSalt(5)
         const rs = await bcrypt.hash(otp,salt)
-        console.log('rs',rs);
+        
         return rs
     } catch (err) {
         throw err['message']
