@@ -23,8 +23,7 @@ ress.errorMessage = rs => (
     {
         code: '02',
         status: false,
-        message: 'Error',
-        data: rs
+        message: rs
     }
 );
 

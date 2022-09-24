@@ -18,5 +18,6 @@ router.delete('/user/hardDelete',auth(1),controller.user.delete)
 
 router.post('/login',controller.auth.login)
 router.post('/verifOTP',controller.auth.verifyOtp)
+router.post('/requestOTP',controller.auth.requestOTP)
 
 module.exports = router
